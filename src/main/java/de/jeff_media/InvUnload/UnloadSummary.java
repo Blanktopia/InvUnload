@@ -10,10 +10,11 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class UnloadSummary {
 	
-	final HashMap<Location,EnumMap<Material,Integer>> unloads;
+	final HashMap<Location,HashMap<String,Integer>> unloads;
 	
 	UnloadSummary() {
 
@@ -21,16 +22,20 @@ public class UnloadSummary {
 		unloads = new HashMap<>();
 	}
 	
-	void protocolUnload(Location loc, Material mat, int amount) {
-		if(amount==0) return;
+	void protocolUnload(Location loc, ItemStack item) {
+		String name = item.getI18NDisplayName();
+		if (item.getItemMeta().hasDisplayName()) {
+			name = item.getItemMeta().getDisplayName();
+		}
+		if(item.getAmount()==0) return;
 		if(!unloads.containsKey(loc)) {
-			unloads.put(loc, new EnumMap<>(Material.class));
-			unloads.get(loc).put(mat, amount);
+			unloads.put(loc, new HashMap<>());
+			unloads.get(loc).put(name, item.getAmount());
 		} else {
-			if(unloads.get(loc).containsKey(mat)) {
-				unloads.get(loc).put(mat, unloads.get(loc).get(mat)+amount);
+			if(unloads.get(loc).containsKey(name)) {
+				unloads.get(loc).put(name, unloads.get(loc).get(name)+item.getAmount());
 			} else {
-				unloads.get(loc).put(mat, amount);
+				unloads.get(loc).put(name, item.getAmount());
 			}
 		}
 	}
@@ -56,13 +61,13 @@ public class UnloadSummary {
 	
 	void print(PrintRecipient recipient, Player p) {
 		if(unloads.size()>0) printTo(recipient,p," ");
-		for(Entry<Location,EnumMap<Material,Integer>> entry : unloads.entrySet()) {
+		for(Entry<Location,HashMap<String,Integer>> entry : unloads.entrySet()) {
 			printTo(recipient,p," ");
 			printTo(recipient,p,loc2str(entry.getKey()));
-			EnumMap<Material,Integer> map = entry.getValue();
-			for(Entry<Material,Integer> entry2 : map.entrySet()) {
+			HashMap<String,Integer> map = entry.getValue();
+			for(Entry<String,Integer> entry2 : map.entrySet()) {
 				printTo(recipient,p,
-						amount2str(entry2.getValue()) + ChatColor.GOLD + entry2.getKey().name());
+						amount2str(entry2.getValue()) + ChatColor.GOLD + entry2.getKey());
 			}
 			//printTo(recipient,p," ");
 		}

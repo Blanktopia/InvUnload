@@ -16,7 +16,9 @@ public class InvUtils {
 		if (BlockUtils.doesChestContain(destination, new ItemStack(mat))) {
 			int amount = BlockUtils.doesChestContainCount(destination, mat);
 
-			summary.protocolUnload(destination.getLocation(), mat, amount);
+			ItemStack item = new ItemStack(mat);
+			item.setAmount(amount);
+			summary.protocolUnload(destination.getLocation(), item);
 			return true;
 		}
 		return false;
@@ -78,7 +80,7 @@ public class InvUtils {
 					amount = amount - leftover.getAmount();
 					source.setItem(i, leftover);
 				}
-				if (summary != null) summary.protocolUnload(destination.getLocation(), item.getType(), amount);
+				if (summary != null) summary.protocolUnload(destination.getLocation(), item);
 			} else {
 				source.setItem(i, item);
 			}
