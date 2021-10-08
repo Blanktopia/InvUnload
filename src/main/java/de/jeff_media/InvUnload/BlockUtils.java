@@ -3,6 +3,7 @@ package de.jeff_media.InvUnload;
 import de.jeff_media.InvUnload.Hooks.ItemsAdderWrapper;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.Container;
@@ -10,6 +11,7 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -71,6 +73,10 @@ public class BlockUtils {
 			if (otherItem.getType() == item.getType()) {
 
 				if(!main.getEnchantmentUtils().hasMatchingEnchantments(item,otherItem)) continue;
+
+				String type = item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey("blanktopia", "type"), PersistentDataType.STRING);
+				String otherType = otherItem.getItemMeta().getPersistentDataContainer().get(new NamespacedKey("blanktopia", "type"), PersistentDataType.STRING);
+				if (type != null && !type.equals(otherType)) continue;
 
 				if (!useItemsAdder) return true;
 
